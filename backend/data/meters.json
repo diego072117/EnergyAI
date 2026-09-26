@@ -1,0 +1,14 @@
+[
+  { "meter_id": "M-101", "name": "Oficinas administrativas", "location": "Sede central · Edificio A" },
+  { "meter_id": "M-102", "name": "Compresores de aire", "location": "Planta Norte · Sala de máquinas" },
+  { "meter_id": "M-103", "name": "Iluminación de bodega", "location": "Centro logístico · Bodega 1" },
+  { "meter_id": "M-104", "name": "Línea de producción 2", "location": "Planta Norte · Nave 2" },
+  { "meter_id": "M-105", "name": "Sistema de climatización", "location": "Sede central · Cubierta" },
+  { "meter_id": "M-106", "name": "Horno industrial", "location": "Planta Sur · Tratamiento térmico" },
+  { "meter_id": "M-107", "name": "Centro de datos", "location": "Sede central · Sótano" },
+  { "meter_id": "M-108", "name": "Cámaras de refrigeración", "location": "Centro logístico · Frío" },
+  { "meter_id": "M-109", "name": "Línea de producción 3", "location": "Planta Norte · Nave 3" },
+  { "meter_id": "M-110", "name": "Bombeo de agua", "location": "Planta Sur · Cuarto de bombas" },
+  { "meter_id": "M-111", "name": "Taller de mantenimiento", "location": "Planta Sur · Taller" },
+  { "meter_id": "M-112", "name": "Subestación auxiliar", "location": "Planta Norte · Subestación" }
+]

@@ -1,0 +1,53 @@
+name: energyai
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: energy
+      POSTGRES_PASSWORD: energy
+      POSTGRES_DB: energyai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U energy -d energyai"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgres://energy:energy@db:5432/energyai?sslmode=disable
+      DATA_DIR: /app/data
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      DEMO_EMAIL: ${DEMO_EMAIL:-demo@energyai.local}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo1234}
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8081
+      ANALYSIS_STEP_DELAY_MS: ${ANALYSIS_STEP_DELAY_MS:-450}
+      # IA generativa opcional. Por defecto "none" (plantillas).
+      # Con Ollama instalado en el host: LLM_PROVIDER=ollama
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434}
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
