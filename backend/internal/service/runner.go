@@ -64,6 +64,8 @@ func (r *Runner) Start(ctx context.Context) (domain.AnalysisRun, error) {
 	}
 	r.running = true
 	r.wg.Add(1)
+	// The goroutine mutates its steps while the caller serializes the returned run.
+	exec := run.Clone()
 	go func() {
 		defer r.wg.Done()
 		defer func() {
@@ -71,7 +73,7 @@ func (r *Runner) Start(ctx context.Context) (domain.AnalysisRun, error) {
 			r.running = false
 			r.mu.Unlock()
 		}()
-		r.execute(run)
+		r.execute(exec)
 	}()
 	return run, nil
 }

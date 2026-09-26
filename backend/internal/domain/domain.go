@@ -240,3 +240,16 @@ func MeterStatusFor(anomalies []Anomaly) MeterStatus {
 	}
 	return status
 }
+
+func (r AnalysisRun) Clone() AnalysisRun {
+	r.Steps = append([]AnalysisStep(nil), r.Steps...)
+	if r.Summary != nil {
+		s := *r.Summary
+		s.ByType = make(map[string]int, len(r.Summary.ByType))
+		for k, v := range r.Summary.ByType {
+			s.ByType[k] = v
+		}
+		r.Summary = &s
+	}
+	return r
+}

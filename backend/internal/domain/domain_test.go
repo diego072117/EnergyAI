@@ -46,3 +46,16 @@ func TestEnumsValid(t *testing.T) {
 		t.Error("expected 7 pipeline steps")
 	}
 }
+
+func TestAnalysisRunCloneIsIndependent(t *testing.T) {
+	orig := AnalysisRun{Steps: NewAnalysisSteps(), Summary: &AnalysisSummary{ByType: map[string]int{"A": 1}}}
+	c := orig.Clone()
+	c.Steps[0].State = StepDone
+	c.Summary.ByType["A"] = 2
+	if orig.Steps[0].State != StepPending || orig.Summary.ByType["A"] != 1 {
+		t.Fatal("clone must not share steps or summary with the original")
+	}
+	if (AnalysisRun{}).Clone().Summary != nil {
+		t.Error("nil summary must stay nil")
+	}
+}

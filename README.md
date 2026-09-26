@@ -282,6 +282,20 @@ La plataforma **funciona completa sin ningún LLM ni API key**: la detección, l
    ```
 
 Con una GPU NVIDIA el modelo corre en la GPU (unos 2 s por explicación); sin GPU también funciona, pero más lento.
+
+#### Entorno en el que se validó
+
+La solución se probó de punta a punta con el **LLM local**, sin API keys ni servicios externos:
+
+| Componente | Versión / detalle |
+|---|---|
+| Sistema | Windows 11 · Docker Desktop 4.48 |
+| Hardware | AMD Ryzen 5 9600X · 32 GB RAM · NVIDIA RTX 5070 (12 GB VRAM) |
+| Runtime | Go 1.27 · Node 22 · PostgreSQL 17 (Docker) |
+| LLM | Ollama 0.34 · **`qwen2.5:7b`** ejecutándose 100% en GPU |
+| Tiempos | 4 explicaciones en ~7 s · análisis completo (7 pasos) en ~9 s, tanto en local como con la API dentro de Docker |
+
+Resultado: los 4 hallazgos con explicación redactada por `qwen2.5:7b` (etiqueta *IA generativa · qwen2.5:7b*) y con las mismas clasificaciones que sin LLM, porque el modelo no decide el resultado. La prueba en vivo se repite con `LLM_LIVE=1 go test ./internal/ai -run OllamaLive -v` (sección 8).
 Otros proveedores: `LLM_PROVIDER=openai` con `LLM_BASE_URL`, `LLM_MODEL` y `LLM_API_KEY` sirve para OpenAI, Groq, OpenRouter, Gemini o cualquier API compatible.
 
 **Qué hace y qué no hace el LLM:** solo redacta `reason` y `recommended_action` a partir de la evidencia ya calculada. **Nunca** decide el tipo, la severidad, la confianza ni la prioridad. Su salida se valida (esquema JSON, longitud y porcentajes que existan en la evidencia). Si falla, se usan las plantillas. La etiqueta de cada explicación indica su origen: *IA generativa · modelo* o *Motor de reglas*.

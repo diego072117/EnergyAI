@@ -85,14 +85,14 @@ func (s *Store) ListEvents(_ context.Context, meterID string) ([]domain.Event, e
 func (s *Store) CreateRun(_ context.Context, run domain.AnalysisRun) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.runs = append(s.runs, run)
+	s.runs = append(s.runs, run.Clone())
 	return nil
 }
 
 func (s *Store) setRun(run domain.AnalysisRun) {
 	for i := range s.runs {
 		if s.runs[i].ID == run.ID {
-			s.runs[i] = run
+			s.runs[i] = run.Clone()
 		}
 	}
 }
@@ -153,7 +153,7 @@ func (s *Store) GetRun(_ context.Context, id string) (domain.AnalysisRun, error)
 	defer s.mu.Unlock()
 	for _, r := range s.runs {
 		if r.ID == id {
-			return r, nil
+			return r.Clone(), nil
 		}
 	}
 	return domain.AnalysisRun{}, store.ErrNotFound
@@ -162,7 +162,7 @@ func (s *Store) GetRun(_ context.Context, id string) (domain.AnalysisRun, error)
 func (s *Store) latest(completedOnly bool) (domain.AnalysisRun, bool) {
 	for i := len(s.runs) - 1; i >= 0; i-- {
 		if !completedOnly || s.runs[i].Status == domain.RunCompleted {
-			return s.runs[i], true
+			return s.runs[i].Clone(), true
 		}
 	}
 	return domain.AnalysisRun{}, false
